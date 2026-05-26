@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Vendas — Jun–Nov 2025 · Clean</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+<style>
+  :root {
+    --bg:           #f5f5f3;
+    --bg-card:      #ffffff;
+    --bg-elev:      #fafaf8;
+    --border:       #e8e8e4;
+    --border-strong:#d4d4cc;
+    --text:         #111111;
+    --text-2:       #555550;
+    --text-3:       #999990;
+    --accent:       #1a1a1a;
+    --accent-2:     #444440;
+    --danger:       #c53030;
+    --warning:      #b45309;
+    --info:         #1d4ed8;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 40px;
+    margin-bottom: 64px;
+  }
+
+  .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 56px;
+    line-height: 1.05;
+    color: var(--text);
+  }
+
+  h1 em {
+    font-style: normal;
+    color: #555550;
+  }
+
+  .meta {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-3);
+    line-height: 1.8;
+  }
+
+  .meta strong { color: var(--text-2); }
+
+  /* ── SECTION HEAD ── */
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-3);
+    letter-spacing: 0.08em;
+  }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .section-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-3);
+    margin-left: auto;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  section { margin-bottom: 64px; }
+
+  /* ── KPI HERO ── */
+  .kpi-hero {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 1px;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .kpi {
+    background: var(--bg-card);
+    padding: 40px;
+  }
+
+  .kpi-grid .kpi { padding: 28px; }
+
+  .kpi-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+  }
+
+  .kpi-value {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    line-height: 1;
+    margin-bottom: 14px;
+  }
+
+  .kpi-hero .kpi:first-child .kpi-value { font-size: 80px; color: var(--accent); }
+  .kpi-hero .kpi:not(:first-child) .kpi-value { font-size: 48px; color: var(--text); }
+  .kpi-grid .kpi .kpi-value { font-size: 34px; color: var(--text); }
+
+  .kpi-foot {
+    font-size: 12px;
+    color: var(--text-3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 3px 7px;
+    border-radius: 2px;
+  }
+
+  .pill.good { background: rgba(21,128,61,.08);  color: #15803d; border: 1px solid rgba(21,128,61,.2); }
+  .pill.warn { background: rgba(180,83,9,.08);   color: var(--warning); border: 1px solid rgba(180,83,9,.2); }
+  .pill.bad  { background: rgba(197,48,48,.08);  color: var(--danger);  border: 1px solid rgba(197,48,48,.2); }
+  .pill.info { background: rgba(29,78,216,.08);  color: var(--info);    border: 1px solid rgba(29,78,216,.2); }
+
+  /* ── CHART CARDS ── */
+  .chart-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); }
+  .chart-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--border); }
+
+  .card {
+    background: var(--bg-card);
+    padding: 28px;
+  }
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  .card-title {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .card-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .chart-wrap        { position: relative; height: 300px; }
+  .chart-wrap.tall   { height: 360px; }
+  .chart-wrap.short  { height: 240px; }
+  .chart-wrap.xshort { height: 200px; }
+
+  /* ── TABLES ── */
+  .table-card { background: var(--bg-card); padding: 28px; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { border-bottom: 1px solid var(--border-strong); }
+  th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0 0 12px;
+    font-weight: 400;
+    text-align: left;
+  }
+  th.r { text-align: right; }
+
+  td {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-2);
+  }
+  td.mono { font-family: 'JetBrains Mono', monospace; }
+  td.r    { text-align: right; }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { color: var(--text); }
+
+  .bar-cell { padding-right: 0; vertical-align: middle; }
+  .bar-wrap { position: relative; height: 20px; }
+  .bar {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    background: rgba(26,26,26,0.06);
+    border-left: 2px solid #1a1a1a;
+    border-radius: 0 1px 1px 0;
+    transition: width .4s ease;
+  }
+
+  /* ── SIMULADOR ── */
+  .sim {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  .sim-controls {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 32px;
+  }
+
+  .sim-controls h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 300;
+    margin-bottom: 28px;
+    line-height: 1.3;
+  }
+
+  .ctrl { margin-bottom: 28px; }
+
+  .ctrl-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+
+  .ctrl-label span:last-child { color: #1a1a1a; font-weight: 500; }
+
+  input[type=range] {
+    width: 100%;
+    appearance: none;
+    height: 1px;
+    background: var(--border-strong);
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    border: none;
+  }
+
+  .sim-reset {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--text-3);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 8px;
+  }
+  .sim-reset:hover { border-color: #1a1a1a; color: #1a1a1a; }
+
+  .sim-output {}
+
+  .sim-kpis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 1px;
+  }
+
+  .sim-kpi {
+    background: var(--bg-elev);
+    padding: 24px;
+  }
+
+  .sim-kpi-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+  }
+
+  .sim-kpi-value {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .sim-kpi-delta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+  }
+  .sim-kpi-delta.up   { color: #15803d; }
+  .sim-kpi-delta.down { color: var(--danger); }
+  .sim-kpi-delta.flat { color: var(--text-3); }
+
+  .sim-chart {
+    background: var(--bg-card);
+    padding: 28px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 80px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .kpi-hero  { grid-template-columns: 1fr 1fr; }
+    .kpi-grid  { grid-template-columns: repeat(2, 1fr); }
+    .chart-2, .chart-3 { grid-template-columns: 1fr; }
+    .sim       { grid-template-columns: 1fr; }
+    h1         { font-size: 40px; }
+    .kpi-hero .kpi:first-child .kpi-value { font-size: 60px; }
+    .sim-kpis  { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div>
+      <div class="brand">— Relatório · 001 / Comercial</div>
+      <h1>Desempenho de<br><em>Vendas</em>.</h1>
+    </div>
+    <div class="meta">
+      Período · <strong>Jun – Nov 2025</strong><br>
+      Pedidos · <strong>192 registros</strong><br>
+      Atualizado · <strong>26 Nov 2025</strong>
+    </div>
+  </header>
+
+  <!-- 01 · VISÃO GERAL -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <span class="section-title">Visão Geral</span>
+      <span class="section-sub">— KPIs principais · Jun–Nov 2025</span>
+    </div>
+
+    <div class="kpi-hero">
+      <div class="kpi">
+        <div class="kpi-label">Receita Total</div>
+        <div class="kpi-value" id="kpi-receita">—</div>
+        <div class="kpi-foot">6 meses de operação <span class="pill good">Faturado</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Pedidos Totais</div>
+        <div class="kpi-value" id="kpi-pedidos">—</div>
+        <div class="kpi-foot">192 ordens processadas <span class="pill good">Ativo</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Ticket Médio</div>
+        <div class="kpi-value" id="kpi-ticket">—</div>
+        <div class="kpi-foot">Por pedido no período <span class="pill info">Global</span></div>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">Receita Faturada</div>
+        <div class="kpi-value" id="kpi-fat">—</div>
+        <div class="kpi-foot"><span class="pill good">164 pedidos</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Em Produção</div>
+        <div class="kpi-value" id="kpi-prod">—</div>
+        <div class="kpi-foot"><span class="pill warn">21 pedidos</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Cancelado</div>
+        <div class="kpi-value" id="kpi-canc">—</div>
+        <div class="kpi-foot"><span class="pill bad">7 pedidos</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Desconto Médio</div>
+        <div class="kpi-value" id="kpi-desc">—</div>
+        <div class="kpi-foot"><span class="pill info">Sobre valor bruto</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 · EVOLUÇÃO MENSAL -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <span class="section-title">Evolução Mensal</span>
+      <span class="section-sub">— Receita & Volume · 6 meses</span>
+    </div>
+
+    <div style="background:var(--border); display:grid; gap:1px;">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Receita por Mês</div>
+            <div class="card-sub">Valor total de pedidos · R$</div>
+          </div>
+          <div class="card-sub">Jun – Nov 2025</div>
+        </div>
+        <div class="chart-wrap tall"><canvas id="chart-mensal"></canvas></div>
+      </div>
+    </div>
+
+    <div style="margin-top:1px; background:var(--border); display:grid; grid-template-columns:1fr 1fr; gap:1px;">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Volume de Pedidos</div>
+            <div class="card-sub">Quantidade de ordens por mês</div>
+          </div>
+        </div>
+        <div class="chart-wrap short"><canvas id="chart-pedidos-mes"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Ticket Médio Mensal</div>
+            <div class="card-sub">Receita ÷ pedidos por mês · R$</div>
+          </div>
+        </div>
+        <div class="chart-wrap short"><canvas id="chart-ticket-mes"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 · CATEGORIAS & REGIÕES -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <span class="section-title">Categorias & Regiões</span>
+      <span class="section-sub">— Composição de receita</span>
+    </div>
+
+    <div class="chart-3" style="background:var(--border); gap:1px;">
+      <div class="card" style="grid-column: span 2;">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Receita por Categoria</div>
+            <div class="card-sub">Ranking de faturamento · R$</div>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="chart-categoria"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Mix por Região</div>
+            <div class="card-sub">Participação percentual</div>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="chart-regiao-donut"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 · RANKINGS -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">04</span>
+      <span class="section-title">Rankings</span>
+      <span class="section-sub">— Vendedores & Clientes</span>
+    </div>
+
+    <div class="chart-2" style="background:var(--border); gap:1px;">
+      <div class="table-card">
+        <div class="card-head" style="margin-bottom:20px;">
+          <div>
+            <div class="card-title">Top Vendedores</div>
+            <div class="card-sub">Por receita acumulada</div>
+          </div>
+        </div>
+        <table id="table-vendedores"></table>
+      </div>
+      <div class="table-card">
+        <div class="card-head" style="margin-bottom:20px;">
+          <div>
+            <div class="card-title">Top Clientes</div>
+            <div class="card-sub">Por volume de compras</div>
+          </div>
+        </div>
+        <table id="table-clientes"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 · STATUS & DESEMPENHO -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">05</span>
+      <span class="section-title">Status & Desempenho</span>
+      <span class="section-sub">— Vendedores comparados</span>
+    </div>
+
+    <div class="chart-2" style="background:var(--border); gap:1px;">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Receita por Status</div>
+            <div class="card-sub">Distribuição do pipeline</div>
+          </div>
+        </div>
+        <div class="chart-wrap short"><canvas id="chart-status"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Ticket Médio por Vendedor</div>
+            <div class="card-sub">Valor médio por ordem · R$</div>
+          </div>
+        </div>
+        <div class="chart-wrap short"><canvas id="chart-ticket-vend"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 · SIMULADOR -->
+  <section>
+    <div class="section-head">
+      <span class="section-num">06</span>
+      <span class="section-title">Simulador de Cenários</span>
+      <span class="section-sub">— Projeção próximo semestre</span>
+    </div>
+
+    <div class="sim">
+      <div class="sim-controls">
+        <h3>Projete o próximo semestre.</h3>
+
+        <div class="ctrl">
+          <div class="ctrl-label">
+            <span>Crescimento de receita</span>
+            <span id="lbl-growth">+0%</span>
+          </div>
+          <input type="range" id="sl-growth" min="-30" max="60" value="0" step="1">
+        </div>
+
+        <div class="ctrl">
+          <div class="ctrl-label">
+            <span>Variação no volume de pedidos</span>
+            <span id="lbl-pedidos">+0%</span>
+          </div>
+          <input type="range" id="sl-pedidos" min="-30" max="60" value="0" step="1">
+        </div>
+
+        <div class="ctrl">
+          <div class="ctrl-label">
+            <span>Redução de desconto médio</span>
+            <span id="lbl-desc">0 pp</span>
+          </div>
+          <input type="range" id="sl-desc" min="-3" max="3" value="0" step="0.1">
+        </div>
+
+        <button class="sim-reset" onclick="resetSim()">↺ Resetar baseline</button>
+      </div>
+
+      <div class="sim-output">
+        <div class="sim-kpis">
+          <div class="sim-kpi">
+            <div class="sim-kpi-label">Receita Projetada</div>
+            <div class="sim-kpi-value" id="sim-rec">—</div>
+            <div class="sim-kpi-delta flat" id="sim-rec-d">vs. baseline</div>
+          </div>
+          <div class="sim-kpi">
+            <div class="sim-kpi-label">Pedidos Projetados</div>
+            <div class="sim-kpi-value" id="sim-ped">—</div>
+            <div class="sim-kpi-delta flat" id="sim-ped-d">vs. baseline</div>
+          </div>
+          <div class="sim-kpi">
+            <div class="sim-kpi-label">Ticket Projetado</div>
+            <div class="sim-kpi-value" id="sim-tkt">—</div>
+            <div class="sim-kpi-delta flat" id="sim-tkt-d">vs. baseline</div>
+          </div>
+        </div>
+        <div class="sim-chart">
+          <div class="card-head" style="margin-bottom:20px;">
+            <div>
+              <div class="card-title">Receita: Baseline vs. Cenário</div>
+              <div class="card-sub">Projeção mensal · R$</div>
+            </div>
+          </div>
+          <div class="chart-wrap"><canvas id="chart-sim"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>Dados · pedidos_6meses.xlsx · 192 registros</div>
+    <div>Build · v1.0 / dark editorial · Dashboard Vendas 2025</div>
+  </footer>
+
+</div><!-- /container -->
+
+<script>
+/* ─── DESIGN DEFAULTS ─── */
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.color = '#555550';
+Chart.defaults.borderColor = '#e8e8e4';
+
+const COLORS     = ['#1a1a1a','#444440','#777770','#aaaaaa','#cccccc','#e0e0da'];
+const COLORS_MIX = ['#1a1a1a','#1d4ed8','#b45309','#c53030','#6b7280','#444440'];
+
+const tooltip = {
+  backgroundColor: '#ffffff',
+  borderColor: '#e8e8e4',
+  borderWidth: 1,
+  padding: 12,
+  titleColor: '#111111',
+  bodyColor: '#555550',
+  titleFont: { family: 'JetBrains Mono', size: 11 },
+  bodyFont:  { family: 'JetBrains Mono', size: 11 },
+};
+
+const scalesXY = {
+  x: { grid: { display: false }, ticks: { font: { family: 'JetBrains Mono', size: 11 } } },
+  y: { grid: { color: '#e8e8e4', drawBorder: false }, ticks: { font: { family: 'JetBrains Mono', size: 11 } } }
+};
+
+/* ─── FORMATAÇÃO ─── */
+const fmtBRL = v => 'R$ ' + v.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+const fmtMi  = v => {
+  if (Math.abs(v) >= 1e6) return 'R$ ' + (v/1e6).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' mi';
+  if (Math.abs(v) >= 1e3) return 'R$ ' + (v/1e3).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) + ' mil';
+  return fmtBRL(v);
+};
+const fmtPct = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
+
+/* ─── DATA ─── */
+const DATA = {
+  global: {
+    valor_total:      14388882.23,
+    total_pedidos:    192,
+    ticket_medio:     74942.10,
+    desconto_medio:   3.60,
+    faturado:         12589230.22,
+    em_producao:      1302630.21,
+    cancelado:        497021.80,
+    pedidos_faturados: 164,
+    pedidos_producao:  21,
+    pedidos_cancelados: 7,
+    taxa_cancelamento: 3.65
+  },
+  mes: [
+    { mes: 'Jun/25', valor: 1338538.37,  pedidos: 28, qtd: 60  },
+    { mes: 'Jul/25', valor: 2085448.38,  pedidos: 32, qtd: 77  },
+    { mes: 'Ago/25', valor: 2264575.45,  pedidos: 30, qtd: 75  },
+    { mes: 'Set/25', valor: 3396323.72,  pedidos: 34, qtd: 92  },
+    { mes: 'Out/25', valor: 2743847.43,  pedidos: 42, qtd: 108 },
+    { mes: 'Nov/25', valor: 2560148.88,  pedidos: 26, qtd: 71  }
+  ],
+  categoria: [
+    { nome: 'Maquinário Pesado',       valor: 8171950.67, pedidos: 40 },
+    { nome: 'Automação Industrial',    valor: 2499993.21, pedidos: 21 },
+    { nome: 'Equipamentos Legados',    valor: 1431498.93, pedidos: 23 },
+    { nome: 'Componentes Eletrônicos', valor: 1072401.41, pedidos: 35 },
+    { nome: 'Serviços de Instalação',  valor:  815176.18, pedidos: 39 },
+    { nome: 'Insumos e Consumíveis',   valor:  397861.83, pedidos: 34 }
+  ],
+  regiao: [
+    { nome: 'Sudeste',      valor: 5952618.10, pedidos: 82 },
+    { nome: 'Sul',          valor: 3158341.81, pedidos: 43 },
+    { nome: 'Nordeste',     valor: 2065508.80, pedidos: 28 },
+    { nome: 'Centro-Oeste', valor: 2024418.58, pedidos: 23 },
+    { nome: 'Norte',        valor: 1187994.94, pedidos: 16 }
+  ],
+  vendedor: [
+    { nome: 'Fernando Lima',  valor: 3162023.18, pedidos: 46, ticket: 68739.63 },
+    { nome: 'Patrícia Souza', valor: 3123064.83, pedidos: 39, ticket: 80078.59 },
+    { nome: 'Ricardo Alves',  valor: 2962420.58, pedidos: 34, ticket: 87130.02 },
+    { nome: 'Juliana Castro', valor: 2899789.03, pedidos: 40, ticket: 72494.73 },
+    { nome: 'Carla Mendes',   valor: 2241584.61, pedidos: 33, ticket: 67926.81 }
+  ],
+  cliente: [
+    { nome: 'TechVarejo SA',        valor: 2393304.10, pedidos: 31 },
+    { nome: 'MetalForte Ltda',      valor: 2004500.59, pedidos: 29 },
+    { nome: 'AgroPlus Brasil',      valor: 1523841.39, pedidos: 18 },
+    { nome: 'LogiCorp',             valor: 1484621.18, pedidos: 11 },
+    { nome: 'FarmaUni',             valor: 1325479.81, pedidos: 18 },
+    { nome: 'Distribuidora Norte',  valor: 1187994.94, pedidos: 16 },
+    { nome: 'PetroServ',            valor: 1013802.62, pedidos: 14 },
+    { nome: 'Construtora Vega',     valor:  631548.77, pedidos: 14 },
+    { nome: 'NovaIndústria',        valor:  579698.56, pedidos:  4 },
+    { nome: 'Têxtil Premium',       valor:  574142.66, pedidos: 10 }
+  ],
+  status: [
+    { nome: 'Faturado',     valor: 12589230.22, pedidos: 164 },
+    { nome: 'Em produção',  valor:  1302630.21, pedidos:  21 },
+    { nome: 'Cancelado',    valor:   497021.80, pedidos:   7 }
+  ]
+};
+
+/* ─── KPIs ─── */
+const G = DATA.global;
+document.getElementById('kpi-receita').textContent = fmtMi(G.valor_total);
+document.getElementById('kpi-pedidos').textContent = G.total_pedidos;
+document.getElementById('kpi-ticket').textContent  = fmtMi(G.ticket_medio);
+document.getElementById('kpi-fat').textContent     = fmtMi(G.faturado);
+document.getElementById('kpi-prod').textContent    = fmtMi(G.em_producao);
+document.getElementById('kpi-canc').textContent    = fmtMi(G.cancelado);
+document.getElementById('kpi-desc').textContent    = fmtPct(G.desconto_medio);
+
+/* ─── CHART: RECEITA MENSAL ─── */
+new Chart(document.getElementById('chart-mensal'), {
+  type: 'line',
+  data: {
+    labels: DATA.mes.map(d => d.mes),
+    datasets: [{
+      label: 'Receita',
+      data: DATA.mes.map(d => d.valor),
+      borderColor: '#1a1a1a',
+      backgroundColor: 'rgba(26,26,26,0.05)',
+      fill: true,
+      tension: 0.35,
+      borderWidth: 2,
+      pointRadius: 4,
+      pointBackgroundColor: '#1a1a1a',
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: {
+      label: ctx => ' ' + fmtMi(ctx.raw)
+    }}},
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'JetBrains Mono', size: 11 } } },
+      y: { grid: { color: '#e8e8e4' }, ticks: { font: { family: 'JetBrains Mono', size: 11 }, callback: v => fmtMi(v) } }
+    }
+  }
+});
+
+/* ─── CHART: PEDIDOS POR MÊS ─── */
+new Chart(document.getElementById('chart-pedidos-mes'), {
+  type: 'bar',
+  data: {
+    labels: DATA.mes.map(d => d.mes),
+    datasets: [{
+      data: DATA.mes.map(d => d.pedidos),
+      backgroundColor: 'rgba(26,26,26,0.08)',
+      borderColor: '#1a1a1a',
+      borderWidth: 1,
+      borderRadius: 0,
+      barThickness: 32,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: {
+      label: ctx => ' ' + ctx.raw + ' pedidos'
+    }}},
+    scales: scalesXY
+  }
+});
+
+/* ─── CHART: TICKET MÉDIO MENSAL ─── */
+new Chart(document.getElementById('chart-ticket-mes'), {
+  type: 'line',
+  data: {
+    labels: DATA.mes.map(d => d.mes),
+    datasets: [{
+      data: DATA.mes.map(d => Math.round(d.valor / d.pedidos)),
+      borderColor: '#1d4ed8',
+      backgroundColor: 'rgba(29,78,216,0.05)',
+      fill: true,
+      tension: 0.35,
+      borderWidth: 2,
+      pointRadius: 4,
+      pointBackgroundColor: '#1d4ed8',
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: {
+      label: ctx => ' ' + fmtMi(ctx.raw)
+    }}},
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'JetBrains Mono', size: 11 } } },
+      y: { grid: { color: '#e8e8e4' }, ticks: { font: { family: 'JetBrains Mono', size: 11 }, callback: v => fmtMi(v) } }
+    }
+  }
+});
+
+/* ─── CHART: CATEGORIA HORIZONTAL ─── */
+new Chart(document.getElementById('chart-categoria'), {
+  type: 'bar',
+  data: {
+    labels: DATA.categoria.map(d => d.nome),
+    datasets: [{
+      data: DATA.categoria.map(d => d.valor),
+      backgroundColor: COLORS,
+      borderRadius: 0,
+      barThickness: 22,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: {
+      label: ctx => ' ' + fmtMi(ctx.raw)
+    }}},
+    scales: {
+      x: { grid: { color: '#e8e8e4' }, ticks: { font: { family: 'JetBrains Mono', size: 11 }, callback: v => fmtMi(v) } },
+      y: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 12 }, color: '#555550' } }
+    }
+  }
+});
+
+/* ─── CHART: REGIÃO DONUT ─── */
+new Chart(document.getElementById('chart-regiao-donut'), {
+  type: 'doughnut',
+  data: {
+    labels: DATA.regiao.map(d => d.nome),
+    datasets: [{
+      data: DATA.regiao.map(d => d.valor),
+      backgroundColor: COLORS_MIX,
+      borderWidth: 0,
+      hoverOffset: 4,
+    }]
+  },
+  options: {
+    cutout: '68%',
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: { font: { family: 'JetBrains Mono', size: 10 }, padding: 16, color: '#555550', boxWidth: 10 }
+      },
+      tooltip: { ...tooltip, callbacks: {
+        label: ctx => ' ' + ctx.label + ': ' + fmtPct(ctx.raw / DATA.global.valor_total * 100)
+      }}
+    }
+  }
+});
+
+/* ─── CHART: STATUS ─── */
+const statusColors = ['#1a1a1a','#b45309','#c53030'];
+new Chart(document.getElementById('chart-status'), {
+  type: 'doughnut',
+  data: {
+    labels: DATA.status.map(d => d.nome),
+    datasets: [{
+      data: DATA.status.map(d => d.valor),
+      backgroundColor: statusColors,
+      borderWidth: 0,
+    }]
+  },
+  options: {
+    cutout: '68%',
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true, position: 'bottom',
+        labels: { font: { family: 'JetBrains Mono', size: 10 }, padding: 16, color: '#555550', boxWidth: 10 }
+      },
+      tooltip: { ...tooltip, callbacks: {
+        label: ctx => ' ' + fmtMi(ctx.raw) + ' · ' + ctx.dataset.data.reduce((a,b)=>a+b,0)
+      }}
+    }
+  }
+});
+
+/* ─── CHART: TICKET VENDEDOR ─── */
+new Chart(document.getElementById('chart-ticket-vend'), {
+  type: 'bar',
+  data: {
+    labels: DATA.vendedor.map(d => d.nome.split(' ')[0]),
+    datasets: [{
+      data: DATA.vendedor.map(d => d.ticket),
+      backgroundColor: COLORS,
+      borderRadius: 0,
+      barThickness: 32,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { ...tooltip, callbacks: {
+      title: ctx => DATA.vendedor[ctx[0].dataIndex].nome,
+      label: ctx => ' Ticket: ' + fmtMi(ctx.raw)
+    }}},
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'JetBrains Mono', size: 11 } } },
+      y: { grid: { color: '#e8e8e4' }, ticks: { font: { family: 'JetBrains Mono', size: 11 }, callback: v => fmtMi(v) } }
+    }
+  }
+});
+
+/* ─── TABLE: VENDEDORES ─── */
+const tvMax = Math.max(...DATA.vendedor.map(d => d.valor));
+const tvEl  = document.getElementById('table-vendedores');
+tvEl.innerHTML = `<thead><tr>
+  <th style="width:30px">#</th>
+  <th>Vendedor</th>
+  <th class="r">Receita</th>
+  <th class="r" style="width:60px">Pedidos</th>
+  <th style="width:30%">Dist.</th>
+</tr></thead><tbody></tbody>`;
+const tvBody = tvEl.querySelector('tbody');
+DATA.vendedor.forEach((d, i) => {
+  const pct = d.valor / tvMax * 100;
+  tvBody.innerHTML += `<tr>
+    <td class="mono" style="color:var(--text-3)">${String(i+1).padStart(2,'0')}</td>
+    <td>${d.nome}</td>
+    <td class="r mono">${fmtMi(d.valor)}</td>
+    <td class="r mono">${d.pedidos}</td>
+    <td class="bar-cell">
+      <div class="bar-wrap"><div class="bar" style="width:${pct}%"></div></div>
+    </td>
+  </tr>`;
+});
+
+/* ─── TABLE: CLIENTES ─── */
+const tcMax = Math.max(...DATA.cliente.map(d => d.valor));
+const tcEl  = document.getElementById('table-clientes');
+tcEl.innerHTML = `<thead><tr>
+  <th style="width:30px">#</th>
+  <th>Cliente</th>
+  <th class="r">Receita</th>
+  <th class="r" style="width:60px">Pedidos</th>
+  <th style="width:30%">Dist.</th>
+</tr></thead><tbody></tbody>`;
+const tcBody = tcEl.querySelector('tbody');
+DATA.cliente.forEach((d, i) => {
+  const pct = d.valor / tcMax * 100;
+  tcBody.innerHTML += `<tr>
+    <td class="mono" style="color:var(--text-3)">${String(i+1).padStart(2,'0')}</td>
+    <td>${d.nome}</td>
+    <td class="r mono">${fmtMi(d.valor)}</td>
+    <td class="r mono">${d.pedidos}</td>
+    <td class="bar-cell">
+      <div class="bar-wrap"><div class="bar" style="width:${pct}%"></div></div>
+    </td>
+  </tr>`;
+});
+
+/* ─── SIMULADOR ─── */
+const BASE_REC = DATA.global.valor_total;
+const BASE_PED = DATA.global.total_pedidos;
+const BASE_DESC= DATA.global.desconto_medio;
+const BASE_MES = DATA.mes.map(d => d.valor);
+
+let simChart = null;
+
+function buildSimChart(projMes) {
+  if (simChart) simChart.destroy();
+  simChart = new Chart(document.getElementById('chart-sim'), {
+    type: 'line',
+    data: {
+      labels: ['Dez/25','Jan/26','Feb/26','Mar/26','Abr/26','Mai/26'],
+      datasets: [
+        {
+          label: 'Baseline',
+          data: BASE_MES,
+          borderColor: '#cccccc',
+          backgroundColor: 'transparent',
+          borderDash: [4,4],
+          tension: 0.35,
+          borderWidth: 1.5,
+          pointRadius: 3,
+          pointBackgroundColor: '#cccccc',
+        },
+        {
+          label: 'Cenário',
+          data: projMes,
+          borderColor: '#1a1a1a',
+          backgroundColor: 'rgba(26,26,26,0.05)',
+          fill: true,
+          tension: 0.35,
+          borderWidth: 2,
+          pointRadius: 4,
+          pointBackgroundColor: '#1a1a1a',
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, position: 'top', align: 'end',
+          labels: { font: { family: 'JetBrains Mono', size: 10 }, color: '#555550', boxWidth: 20, padding: 12 }
+        },
+        tooltip: { ...tooltip, callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + fmtMi(ctx.raw) }}
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: 'JetBrains Mono', size: 11 } } },
+        y: { grid: { color: '#e8e8e4' }, ticks: { font: { family: 'JetBrains Mono', size: 11 }, callback: v => fmtMi(v) } }
+      }
+    }
+  });
+}
+
+function updateSim() {
+  const growth = parseFloat(document.getElementById('sl-growth').value) / 100;
+  const ped    = parseFloat(document.getElementById('sl-pedidos').value) / 100;
+  const desc   = parseFloat(document.getElementById('sl-desc').value);
+
+  document.getElementById('lbl-growth').textContent = (growth >= 0 ? '+' : '') + (growth*100).toFixed(0) + '%';
+  document.getElementById('lbl-pedidos').textContent= (ped >= 0 ? '+' : '') + (ped*100).toFixed(0) + '%';
+  document.getElementById('lbl-desc').textContent   = (desc >= 0 ? '+' : '') + desc.toFixed(1) + ' pp';
+
+  const projRec = BASE_REC * (1 + growth);
+  const projPed = Math.round(BASE_PED * (1 + ped));
+  const projTkt = projRec / projPed;
+  const projMes = BASE_MES.map(v => v * (1 + growth));
+
+  document.getElementById('sim-rec').textContent = fmtMi(projRec);
+  document.getElementById('sim-ped').textContent = projPed;
+  document.getElementById('sim-tkt').textContent = fmtMi(projTkt);
+
+  const diffRec = (projRec - BASE_REC) / BASE_REC * 100;
+  const diffPed = ped * 100;
+  const diffTkt = (projTkt - G.ticket_medio) / G.ticket_medio * 100;
+
+  const setDelta = (id, val) => {
+    const el = document.getElementById(id);
+    el.textContent = (val >= 0 ? '↑ +' : '↓ ') + Math.abs(val).toFixed(1) + '% vs. baseline';
+    el.className = 'sim-kpi-delta ' + (Math.abs(val) < 0.1 ? 'flat' : val > 0 ? 'up' : 'down');
+  };
+  setDelta('sim-rec-d', diffRec);
+  setDelta('sim-ped-d', diffPed);
+  setDelta('sim-tkt-d', diffTkt);
+
+  buildSimChart(projMes);
+}
+
+function resetSim() {
+  document.getElementById('sl-growth').value = 0;
+  document.getElementById('sl-pedidos').value = 0;
+  document.getElementById('sl-desc').value = 0;
+  updateSim();
+}
+
+document.getElementById('sl-growth').addEventListener('input', updateSim);
+document.getElementById('sl-pedidos').addEventListener('input', updateSim);
+document.getElementById('sl-desc').addEventListener('input', updateSim);
+
+updateSim();
+</script>
+</body>
+</html>
